@@ -1,6 +1,9 @@
 const express = require('express')
 const router = express.Router()
 const contacts = require('../../controller/contactsController')
+const { authMiddleware } = require('../../middleware/authMiddleware')
+
+router.use(authMiddleware)
 
 router.get('/', contacts.listContactsController)
 router.get('/:contactId', contacts.getContactByIdController)
