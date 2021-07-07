@@ -1,31 +1,35 @@
 const { Contact } = require('../model/contactsSchema')
 
-const listContacts = async () => {
+const listContacts = async ({ skip, limit }, owner, query) => {
   try {
-    const contacts = await Contact.find({})
+    const contacts = await Contact.find({ owner })
+      .find(query)
+      .skip(skip)
+      .limit(limit)
     return contacts
   } catch (err) { return err.message }
 }
 
-const getContactById = async (contactId) => {
+const getContactById = async (contactId, owner) => {
   try {
-    const contactFound = await Contact.findById(contactId)
+    const contactFound = await Contact.findOne({ _id: contactId, owner })
     return contactFound
   } catch (err) { return err.message }
 }
 
-const removeContact = async (contactId) => {
+const removeContact = async (contactId, owner) => {
   try {
-    await Contact.findByIdAndRemove(contactId)
+    await Contact.findOneAndRemove({ _id: contactId, owner })
   } catch (err) { return err.message }
 }
 
-const addContact = async (body) => {
+const addContact = async (body, owner) => {
   const newContact = {
     name: body.name,
     email: body.email,
     phone: body.phone,
     favorite: body.favorite || false,
+    owner: owner
   }
 
   try {
@@ -34,18 +38,17 @@ const addContact = async (body) => {
   } catch (err) { return err.message }
 }
 
-const updateContact = async (contactId, body) => {
+const updateContact = async (contactId, body, owner) => {
   try {
-    await Contact.findByIdAndUpdate(contactId, { ...body }, { new: true })
-    return getContactById(contactId)
+    await Contact.findOneAndUpdate({ _id: contactId, owner }, { ...body }, { new: true })
+    return getContactById(contactId, owner)
   } catch (err) { return err.message }
 }
 
-const updateStatusContact = async (contactId, body) => {
+const updateStatusContact = async (contactId, body, owner) => {
   try {
-    await Contact.findByIdAndUpdate(contactId,
-      { $set: { favorite: body.favorite } })
-    return getContactById(contactId)
+    await Contact.findOneAndUpdate({ _id: contactId, owner }, { ...body },)
+    return getContactById(contactId, owner)
   } catch (err) {
     return err.message
   }
