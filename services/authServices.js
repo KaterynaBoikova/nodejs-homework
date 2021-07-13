@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const { User } = require('../model/userSchema')
 const errors = require('../services/errors')
+const gravatar = require('gravatar')
 
 const registration = async (body) => {
   const userExist = await User.findOne({ email: body.email })
@@ -12,6 +13,7 @@ const registration = async (body) => {
     email: body.email,
     password: body.password,
     subscription: body.subscription || 'starter',
+    avatarURL: gravatar.url(body.email),
   }
   const user = new User(newUser)
   await user.save()
@@ -46,11 +48,16 @@ const updateSubscription = async (userId, body) => {
   await User.updateOne({ _id: userId }, { $set: { subscription: body.subscription } })
   return User.findOne({ _id: userId })
 }
+const updateAvatarURl = async (userId, path) => {
+  await User.updateOne({ _id: userId }, { $set: { avatarURL: path } })
+  return User.findOne({ _id: userId })
+}
 
 module.exports = {
   registration,
   login,
   logout,
   getCurrentUser,
-  updateSubscription
+  updateSubscription,
+  updateAvatarURl
 }
