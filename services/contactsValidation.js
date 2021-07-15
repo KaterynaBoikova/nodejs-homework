@@ -25,4 +25,5 @@ const schemaUpdate = yup.object().shape({
 const schemaFav = yup.object().shape({
   favorite: yup.boolean(),
 })
+
 module.exports = { schema, schemaUpdate, schemaFav }

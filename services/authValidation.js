@@ -15,4 +15,17 @@ module.exports = {
 
     next()
   },
+  verificationValidation: async (req, res, next) => {
+    const verification = Joi.object({
+      email: Joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }).required()
+    })
+
+    const validationResult = await verification.validate(req.body)
+    if (validationResult.error) {
+      next(new errors.ValidationError(validationResult.error.details[0].message))
+    }
+
+    next()
+  },
+
 }
