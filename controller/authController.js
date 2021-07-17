@@ -9,6 +9,14 @@ const registrationController = async (req, res, next) => {
   const createdUser = await auth.registration(req.body)
   return res.status(201).json({ user: createdUser })
 }
+const verificationController = async (req, res, next) => {
+  await auth.verification(req.params.verificationToken)
+  return res.status(200).json({ message: 'Verification successful' })
+}
+const ifFirstFailedVerificationController = async (req, res, next) => {
+  await auth.ifFirstFailedVerification(req.body)
+  return res.status(200).json({ message: 'Verification email sent' })
+}
 
 const loginController = async (req, res, next) => {
   const token = await auth.login(req.body)
@@ -46,6 +54,8 @@ const updateAvatarController = async (req, res, next) => {
 
 module.exports = {
   registrationController,
+  verificationController,
+  ifFirstFailedVerificationController,
   loginController,
   logoutController,
   getCurrentUserController,
